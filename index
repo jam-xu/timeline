@@ -24,7 +24,6 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{font-family:'Georgia',serif;background:var(--bg);color:var(--text-primary);min-height:100vh;}
 
-  /* Auth Modal */
   .auth-modal {
     display: flex;
     position: fixed;
@@ -120,19 +119,12 @@
   .auth-btn.primary:hover {
     background: var(--purple-600);
   }
-  .auth-btn.secondary {
-    background: transparent;
-    border: 1px solid var(--border-strong);
-    color: var(--text-secondary);
-  }
-  .auth-btn.secondary:hover {
-    background: var(--gray-50);
-  }
   .auth-link {
     text-align: center;
     font-size: 12px;
     color: var(--text-hint);
     font-family: 'Arial', sans-serif;
+    margin-top: 8px;
   }
   .auth-link button {
     background: none;
@@ -153,7 +145,6 @@
   .btn-hdr:hover{background:rgba(255,255,255,0.28);}
   .btn-hdr svg{width:13px;height:13px;flex-shrink:0;}
   .btn-hdr:disabled{opacity:0.35;cursor:default;}
-  .btn-hdr.undo-btn{background:rgba(255,255,255,0.08);border-style:dashed;}
 
   .units-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:0;overflow-x:auto;}
   .unit-tab{padding:12px 16px;font-size:13px;font-family:'Arial',sans-serif;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;color:var(--text-secondary);background:none;border-top:none;border-left:none;border-right:none;transition:color 0.15s;}
@@ -177,7 +168,6 @@
   .btn-secondary{background:transparent;border:1px solid var(--border-strong);color:var(--text-secondary);}
   .btn-secondary:hover{background:var(--gray-50);color:var(--text-primary);}
   .btn:active{transform:scale(0.97);}
-  .error-msg{font-size:12px;color:var(--red-600);font-family:'Arial',sans-serif;margin-top:4px;display:none;}
 
   .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
   .toolbar span{font-size:12px;font-family:'Arial',sans-serif;color:var(--text-hint);}
@@ -217,10 +207,6 @@
   .event-desc{font-size:13px;color:var(--text-secondary);margin-top:6px;line-height:1.65;font-family:'Arial',sans-serif;}
   .cat-label{font-size:11px;font-family:'Arial',sans-serif;color:var(--text-hint);margin-top:4px;}
 
-  .edit-form{margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
-  .edit-grid{display:grid;grid-template-columns:180px 1fr;gap:8px;margin-bottom:8px;}
-  .edit-actions{display:flex;gap:6px;justify-content:flex-end;}
-
   .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-hint);font-family:'Arial',sans-serif;font-size:14px;}
   .empty-state .icon{font-size:32px;margin-bottom:8px;}
 
@@ -243,13 +229,11 @@
 </head>
 <body>
 
-<!-- Auth Modal -->
 <div class="auth-modal" id="auth-modal">
   <div class="auth-box">
     <h2 id="auth-title">Connexion</h2>
     <div class="auth-error" id="auth-error"></div>
     
-    <!-- Login Form -->
     <div id="login-form">
       <div class="auth-field">
         <label>Adresse Email</label>
@@ -265,12 +249,11 @@
       <div class="auth-link">
         Pas encore inscrit ? <button onclick="switchToSignup()">Créer un compte</button>
       </div>
-      <div class="auth-link" style="margin-top: 8px;">
+      <div class="auth-link">
         <button onclick="switchToForgot()">Mot de passe oublié ?</button>
       </div>
     </div>
 
-    <!-- Signup Form -->
     <div id="signup-form" style="display: none;">
       <div class="auth-field">
         <label>Adresse Email</label>
@@ -292,7 +275,6 @@
       </div>
     </div>
 
-    <!-- Forgot Password Form -->
     <div id="forgot-form" style="display: none;">
       <div class="auth-field">
         <label>Adresse Email</label>
@@ -410,12 +392,23 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// Supabase initialization
+// ─────────────────────────────────────────────────────────
+// SUPABASE CONFIG - UPDATE THESE VALUES!
+// ─────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://rltxdbjioopgzqqlzfxk.supabase.co';  // Replace with your project URL
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsdHhkYmppb29wZ3pxcWx6ZnhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyOTExMzMsImV4cCI6MjA5ODg2NzEzM30.hHfZAmYS31WyMiJdcn9K7zfzPAqL1J8uDnuzn4WqbvE';  // Replace with your anon key
-const { createClient } = window.supabase;
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsdHhkYmppb29wZ3pxcWx6ZnhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyOTExMzMsImV4cCI6MjA5ODg2NzEzM30.hHfZAmYS31WyMiJdcn9K7zfzPAqL1J8uDnuzn4WqbvE';  
+// Initialize Supabase ONCE
+let supabase = null;
+try {
+  const { createClient } = window.supabase;
+  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} catch(e) {
+  console.error('Supabase init error:', e);
+}
 
+// ─────────────────────────────────────────────────────────
+// GLOBAL VARIABLES
+// ─────────────────────────────────────────────────────────
 let events = [];
 let currentUser = null;
 let currentSort = 'chrono';
@@ -434,85 +427,8 @@ const UNITS = [
 ];
 
 // ─────────────────────────────────────────────────────────
-// AUTH FUNCTIONS
+// AUTH FUNCTIONS - DEFINED FIRST
 // ─────────────────────────────────────────────────────────
-
-async function handleLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  const errorEl = document.getElementById('auth-error');
-  
-  if (!email || !password) {
-    showAuthError('Veuillez remplir tous les champs');
-    return;
-  }
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
-    showAuthError(error.message);
-  } else {
-    currentUser = data.user;
-    closeAuthModal();
-    updateHeader();
-    loadEvents();
-  }
-}
-
-async function handleSignup() {
-  const email = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const confirm = document.getElementById('signup-confirm').value;
-  const errorEl = document.getElementById('auth-error');
-  
-  if (!email || !password || !confirm) {
-    showAuthError('Veuillez remplir tous les champs');
-    return;
-  }
-  if (password !== confirm) {
-    showAuthError('Les mots de passe ne correspondent pas');
-    return;
-  }
-  if (password.length < 6) {
-    showAuthError('Le mot de passe doit contenir au moins 6 caractères');
-    return;
-  }
-
-  const { data, error } = await supabase.auth.signUp({ email, password });
-  if (error) {
-    showAuthError(error.message);
-  } else {
-    showToast('✅ Compte créé ! Vérifiez votre email.');
-    setTimeout(() => switchToLogin(), 2000);
-  }
-}
-
-async function handleForgot() {
-  const email = document.getElementById('forgot-email').value.trim();
-  const errorEl = document.getElementById('auth-error');
-  
-  if (!email) {
-    showAuthError('Veuillez entrer votre email');
-    return;
-  }
-
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '?password-reset=true'
-  });
-  
-  if (error) {
-    showAuthError(error.message);
-  } else {
-    showToast('✅ Lien de réinitialisation envoyé !');
-    setTimeout(() => switchToLogin(), 2000);
-  }
-}
-
-function showAuthError(msg) {
-  const errorEl = document.getElementById('auth-error');
-  errorEl.textContent = msg;
-  errorEl.classList.add('show');
-  setTimeout(() => errorEl.classList.remove('show'), 3000);
-}
 
 function switchToLogin() {
   document.getElementById('login-form').style.display = 'block';
@@ -557,14 +473,105 @@ function openAuthModal() {
   switchToLogin();
 }
 
-async function handleLogout() {
-  await supabase.auth.signOut();
-  currentUser = null;
-  events = [];
-  updateHeader();
-  render();
-  openAuthModal();
-  showToast('✅ Déconnecté');
+function showAuthError(msg) {
+  const errorEl = document.getElementById('auth-error');
+  errorEl.textContent = msg;
+  errorEl.classList.add('show');
+  setTimeout(() => errorEl.classList.remove('show'), 3000);
+}
+
+async function handleLogin() {
+  if (!supabase) {
+    showAuthError('Supabase not initialized');
+    return;
+  }
+
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  
+  if (!email || !password) {
+    showAuthError('Veuillez remplir tous les champs');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      showAuthError(error.message);
+    } else {
+      currentUser = data.user;
+      closeAuthModal();
+      updateHeader();
+      await loadEvents();
+    }
+  } catch(e) {
+    showAuthError('Erreur: ' + e.message);
+  }
+}
+
+async function handleSignup() {
+  if (!supabase) {
+    showAuthError('Supabase not initialized');
+    return;
+  }
+
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-confirm').value;
+  
+  if (!email || !password || !confirm) {
+    showAuthError('Veuillez remplir tous les champs');
+    return;
+  }
+  if (password !== confirm) {
+    showAuthError('Les mots de passe ne correspondent pas');
+    return;
+  }
+  if (password.length < 6) {
+    showAuthError('Le mot de passe doit contenir au moins 6 caractères');
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+      showAuthError(error.message);
+    } else {
+      showToast('✅ Compte créé ! Vérifiez votre email.');
+      setTimeout(() => switchToLogin(), 2000);
+    }
+  } catch(e) {
+    showAuthError('Erreur: ' + e.message);
+  }
+}
+
+async function handleForgot() {
+  if (!supabase) {
+    showAuthError('Supabase not initialized');
+    return;
+  }
+
+  const email = document.getElementById('forgot-email').value.trim();
+  
+  if (!email) {
+    showAuthError('Veuillez entrer votre email');
+    return;
+  }
+
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '?password-reset=true'
+    });
+    
+    if (error) {
+      showAuthError(error.message);
+    } else {
+      showToast('✅ Lien de réinitialisation envoyé !');
+      setTimeout(() => switchToLogin(), 2000);
+    }
+  } catch(e) {
+    showAuthError('Erreur: ' + e.message);
+  }
 }
 
 function updateHeader() {
@@ -595,40 +602,55 @@ function showUserMenu() {
   }
 }
 
+async function handleLogout() {
+  if (!supabase) return;
+  await supabase.auth.signOut();
+  currentUser = null;
+  events = [];
+  updateHeader();
+  render();
+  openAuthModal();
+  showToast('✅ Déconnecté');
+}
+
 // ─────────────────────────────────────────────────────────
 // TIMELINE FUNCTIONS
 // ─────────────────────────────────────────────────────────
 
 async function loadEvents() {
-  if (!currentUser || loadingEvents) return;
+  if (!currentUser || !supabase || loadingEvents) return;
   loadingEvents = true;
   
-  const { data, error } = await supabase
-    .from('events')
-    .select('*')
-    .eq('user_id', currentUser.id)
-    .order('sort_key', { ascending: true });
+  try {
+    const { data, error } = await supabase
+      .from('events')
+      .select('*')
+      .eq('user_id', currentUser.id)
+      .order('sort_key', { ascending: true });
 
-  if (error) {
-    console.error('Load error:', error);
-    showToast('⚠️ Erreur lors du chargement');
-  } else {
-    events = data.map(e => ({
-      id: e.id,
-      date: e.date,
-      title: e.title,
-      desc: e.description,
-      cat: e.category,
-      unit: e.unit,
-      sortKey: e.sort_key
-    }));
-    render();
+    if (error) {
+      console.error('Load error:', error);
+      showToast('⚠️ Erreur lors du chargement');
+    } else {
+      events = (data || []).map(e => ({
+        id: e.id,
+        date: e.date,
+        title: e.title,
+        desc: e.description,
+        cat: e.category,
+        unit: e.unit,
+        sortKey: e.sort_key
+      }));
+      render();
+    }
+  } catch(e) {
+    console.error('Load exception:', e);
   }
   loadingEvents = false;
 }
 
 async function addEvent() {
-  if (!currentUser) {
+  if (!currentUser || !supabase) {
     openAuthModal();
     return;
   }
@@ -646,66 +668,56 @@ async function addEvent() {
 
   const sortKey = parseSortKey(date);
   
-  const { data, error } = await supabase
-    .from('events')
-    .insert([{
-      user_id: currentUser.id,
-      date,
-      title,
-      description: desc,
-      category: cat,
-      unit,
-      sort_key: sortKey
-    }])
-    .select();
+  try {
+    const { error } = await supabase
+      .from('events')
+      .insert([{
+        user_id: currentUser.id,
+        date,
+        title,
+        description: desc,
+        category: cat,
+        unit,
+        sort_key: sortKey
+      }]);
 
-  if (error) {
-    console.error('Add error:', error);
-    alert('Erreur lors de l\'ajout');
-  } else {
-    document.getElementById('inp-date').value = '';
-    document.getElementById('inp-title').value = '';
-    document.getElementById('inp-desc').value = '';
-    document.getElementById('inp-cat').value = 'autre';
-    await loadEvents();
-    showToast('✅ Événement ajouté !');
+    if (error) {
+      console.error('Add error:', error);
+      alert('Erreur lors de l\'ajout: ' + error.message);
+    } else {
+      document.getElementById('inp-date').value = '';
+      document.getElementById('inp-title').value = '';
+      document.getElementById('inp-desc').value = '';
+      document.getElementById('inp-cat').value = 'autre';
+      await loadEvents();
+      showToast('✅ Événement ajouté !');
+    }
+  } catch(e) {
+    console.error('Add exception:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
 async function deleteEvent(id) {
-  if (!currentUser) return;
+  if (!currentUser || !supabase) return;
   if (!confirm('Supprimer cet événement ?')) return;
 
-  const { error } = await supabase
-    .from('events')
-    .delete()
-    .eq('id', id)
-    .eq('user_id', currentUser.id);
+  try {
+    const { error } = await supabase
+      .from('events')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', currentUser.id);
 
-  if (error) {
-    console.error('Delete error:', error);
-    alert('Erreur lors de la suppression');
-  } else {
-    await loadEvents();
-    showToast('✅ Événement supprimé');
-  }
-}
-
-async function updateEvent(id, changes) {
-  if (!currentUser) return;
-
-  const { error } = await supabase
-    .from('events')
-    .update(changes)
-    .eq('id', id)
-    .eq('user_id', currentUser.id);
-
-  if (error) {
-    console.error('Update error:', error);
-    alert('Erreur lors de la mise à jour');
-  } else {
-    await loadEvents();
-    showToast('✅ Événement mis à jour');
+    if (error) {
+      console.error('Delete error:', error);
+      alert('Erreur lors de la suppression');
+    } else {
+      await loadEvents();
+      showToast('✅ Événement supprimé');
+    }
+  } catch(e) {
+    console.error('Delete exception:', e);
   }
 }
 
@@ -768,7 +780,6 @@ function render() {
           <span class="event-date-badge">${escHtml(e.date)}</span>
           <div class="event-title">${escHtml(e.title)}</div>
           <div class="event-actions">
-            <button class="icon-btn" onclick="editEvent(${e.id})">✏️</button>
             <button class="icon-btn del" onclick="deleteEvent(${e.id})">🗑️</button>
           </div>
         </div>
@@ -800,6 +811,12 @@ function exportJSON() {
 }
 
 function importJSON(evt) {
+  if (!currentUser || !supabase) {
+    alert('Veuillez vous connecter');
+    evt.target.value = '';
+    return;
+  }
+
   const file = evt.target.files[0];
   if (!file) return;
 
@@ -812,7 +829,6 @@ function importJSON(evt) {
       
       if (!confirm('Importer ' + imported.length + ' événement(s) ?\n(Ceux-ci s\'ajouteront à vos événements actuels)')) return;
 
-      // Add each event to database
       for (const ev of imported) {
         const sortKey = parseSortKey(ev.date || '');
         await supabase.from('events').insert([{
@@ -829,7 +845,7 @@ function importJSON(evt) {
       await loadEvents();
       showToast('✅ ' + imported.length + ' événements importés !');
     } catch (err) {
-      alert('Fichier JSON invalide: ' + err.message);
+      alert('Erreur: ' + err.message);
     }
     evt.target.value = '';
   };
@@ -892,10 +908,6 @@ function openPrintPage() {
   else { showToast('⚠️ Autorisez les popups pour imprimer'); }
 }
 
-function editEvent(id) {
-  alert('La modification en ligne sera implémentée dans la prochaine version');
-}
-
 function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -917,31 +929,40 @@ function filterUnit(uid) {
 }
 
 // ─────────────────────────────────────────────────────────
-// INIT
+// INITIALIZATION
 // ─────────────────────────────────────────────────────────
 
 async function init() {
-  // Check if user is already logged in
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    currentUser = session.user;
-    updateHeader();
-    await loadEvents();
-  } else {
+  if (!supabase) {
+    showToast('⚠️ Supabase not configured. Check browser console.');
     openAuthModal();
+    return;
   }
 
-  // Listen for auth changes
-  supabase.auth.onAuthStateChange(async (event, session) => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
     if (session) {
       currentUser = session.user;
       updateHeader();
       await loadEvents();
     } else {
-      currentUser = null;
-      updateHeader();
+      openAuthModal();
     }
-  });
+
+    supabase.auth.onAuthStateChange(async (event, session) => {
+      if (session) {
+        currentUser = session.user;
+        updateHeader();
+        await loadEvents();
+      } else {
+        currentUser = null;
+        updateHeader();
+      }
+    });
+  } catch(e) {
+    console.error('Init error:', e);
+    showToast('⚠️ Initialization error');
+  }
 }
 
 buildUnitTabs();
