@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/frise_historique_supabase.html"
+    }
+  ]
+}
