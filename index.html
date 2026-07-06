@@ -3,228 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frise Chronologique — Histoire du Québec et du Canada</title>
+<title>Frise Chronologique</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root {
-    --purple-50:#EEEDFE;--purple-200:#AFA9EC;--purple-600:#534AB7;--purple-800:#3C3489;
-    --teal-50:#E1F5EE;--teal-600:#0F6E56;--teal-800:#085041;
-    --coral-50:#FAECE7;--coral-600:#993C1D;--coral-800:#712B13;
-    --amber-50:#FAEEDA;--amber-600:#854F0B;--amber-800:#633806;
-    --gray-50:#F1EFE8;--gray-100:#D3D1C7;--gray-400:#888780;--gray-600:#5F5E5A;--gray-800:#444441;
-    --blue-50:#E6F1FB;--blue-600:#185FA5;--blue-800:#0C447C;
-    --green-50:#EAF3DE;--green-600:#3B6D11;--green-800:#27500A;
-    --red-50:#FCEBEB;--red-600:#A32D2D;
-    --pink-50:#FBEAF0;--pink-600:#993556;--pink-800:#72243E;
-    --bg:#FAFAF8;--surface:#FFFFFF;
-    --border:rgba(0,0,0,0.1);--border-strong:rgba(0,0,0,0.18);
-    --text-primary:#1A1A18;--text-secondary:#5F5E5A;--text-hint:#888780;
-    --radius:10px;--radius-sm:6px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:'Georgia',serif;background:var(--bg);color:var(--text-primary);min-height:100vh;}
-
-  .auth-modal {
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  .auth-modal.hidden {
-    display: none;
-  }
-  .auth-box {
-    background: var(--surface);
-    padding: 2rem;
-    border-radius: var(--radius);
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  }
-  .auth-box h2 {
-    font-size: 18px;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
-    font-family: 'Arial', sans-serif;
-  }
-  .auth-field {
-    margin-bottom: 1rem;
-  }
-  .auth-field label {
-    display: block;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-hint);
-    margin-bottom: 6px;
-    font-family: 'Arial', sans-serif;
-  }
-  .auth-field input {
-    width: 100%;
-    padding: 10px 12px;
-    font-size: 14px;
-    border: 1px solid var(--border-strong);
-    border-radius: var(--radius-sm);
-    font-family: 'Arial', sans-serif;
-    background: var(--bg);
-    color: var(--text-primary);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  .auth-field input:focus {
-    border-color: var(--purple-600);
-    box-shadow: 0 0 0 2px var(--purple-50);
-  }
-  .auth-error {
-    background: var(--red-50);
-    color: var(--red-600);
-    padding: 10px;
-    border-radius: var(--radius-sm);
-    font-size: 12px;
-    margin-bottom: 1rem;
-    display: none;
-    font-family: 'Arial', sans-serif;
-  }
-  .auth-error.show {
-    display: block;
-  }
-  .auth-buttons {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 1rem;
-  }
-  .auth-btn {
-    flex: 1;
-    padding: 10px;
-    font-size: 13px;
-    font-family: 'Arial', sans-serif;
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.15s;
-  }
-  .auth-btn.primary {
-    background: var(--purple-800);
-    color: #fff;
-  }
-  .auth-btn.primary:hover {
-    background: var(--purple-600);
-  }
-  .auth-link {
-    text-align: center;
-    font-size: 12px;
-    color: var(--text-hint);
-    font-family: 'Arial', sans-serif;
-    margin-top: 8px;
-  }
-  .auth-link button {
-    background: none;
-    border: none;
-    color: var(--purple-600);
-    cursor: pointer;
-    text-decoration: underline;
-    font-size: 12px;
-    font-family: 'Arial', sans-serif;
-  }
-
-  header{background:var(--purple-800);color:#fff;padding:1.5rem 2rem;border-bottom:3px solid var(--purple-600);}
-  header h1{font-size:22px;font-weight:700;letter-spacing:-0.3px;margin-bottom:4px;}
-  header p{font-size:13px;opacity:0.75;font-family:'Arial',sans-serif;}
-  .header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
-  .header-actions{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
-  .btn-hdr{background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:var(--radius-sm);padding:7px 12px;color:#fff;font-size:12px;font-family:'Arial',sans-serif;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background 0.15s;white-space:nowrap;}
-  .btn-hdr:hover{background:rgba(255,255,255,0.28);}
-  .btn-hdr svg{width:13px;height:13px;flex-shrink:0;}
-  .btn-hdr:disabled{opacity:0.35;cursor:default;}
-
-  .units-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;gap:0;overflow-x:auto;}
-  .unit-tab{padding:12px 16px;font-size:13px;font-family:'Arial',sans-serif;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;color:var(--text-secondary);background:none;border-top:none;border-left:none;border-right:none;transition:color 0.15s;}
-  .unit-tab:hover{color:var(--text-primary);}
-  .unit-tab.active{color:var(--purple-800);border-bottom-color:var(--purple-600);font-weight:600;}
-
-  main{max-width:860px;margin:0 auto;padding:1.5rem 2rem 4rem;}
-
-  .add-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;margin-bottom:2rem;}
-  .add-panel h2{font-size:15px;font-weight:600;font-family:'Arial',sans-serif;margin-bottom:1rem;color:var(--text-primary);}
-  .form-grid{display:grid;grid-template-columns:180px 1fr;gap:10px;margin-bottom:10px;}
-  .form-full{margin-bottom:10px;}
-  label{display:block;font-size:11px;font-family:'Arial',sans-serif;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-hint);margin-bottom:4px;}
-  input[type=text],textarea,select{width:100%;padding:8px 10px;font-size:14px;font-family:'Arial',sans-serif;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--bg);color:var(--text-primary);outline:none;transition:border-color 0.15s;}
-  input[type=text]:focus,textarea:focus,select:focus{border-color:var(--purple-600);box-shadow:0 0 0 2px var(--purple-50);}
-  textarea{min-height:64px;resize:vertical;line-height:1.55;}
-  .form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:4px;}
-  .btn{padding:8px 16px;font-size:13px;font-family:'Arial',sans-serif;border-radius:var(--radius-sm);cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;}
-  .btn-primary{background:var(--purple-800);border:1px solid var(--purple-800);color:#fff;}
-  .btn-primary:hover{background:var(--purple-600);border-color:var(--purple-600);}
-  .btn-secondary{background:transparent;border:1px solid var(--border-strong);color:var(--text-secondary);}
-  .btn-secondary:hover{background:var(--gray-50);color:var(--text-primary);}
-  .btn:active{transform:scale(0.97);}
-
-  .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:1.5rem;flex-wrap:wrap;}
-  .toolbar span{font-size:12px;font-family:'Arial',sans-serif;color:var(--text-hint);}
-  .sort-btn{padding:5px 12px;font-size:12px;font-family:'Arial',sans-serif;border:1px solid var(--border-strong);border-radius:20px;background:transparent;color:var(--text-secondary);cursor:pointer;transition:all 0.15s;}
-  .sort-btn.active{background:var(--purple-50);border-color:var(--purple-600);color:var(--purple-800);font-weight:600;}
-  .count-badge{margin-left:auto;font-size:12px;font-family:'Arial',sans-serif;color:var(--text-hint);}
-
-  .timeline{position:relative;padding-left:52px;}
-  .timeline-axis{position:absolute;left:20px;top:8px;bottom:8px;width:2px;background:var(--gray-100);}
-
-  .event-row{position:relative;margin-bottom:1.25rem;}
-  .event-dot{position:absolute;left:-39px;top:14px;width:14px;height:14px;border-radius:50%;border:2.5px solid var(--bg);box-shadow:0 0 0 2px var(--gray-100);background:var(--gray-400);transition:background 0.2s;}
-  .event-row.cat-politique .event-dot{background:var(--purple-600);box-shadow:0 0 0 2px var(--purple-200);}
-  .event-row.cat-social .event-dot{background:var(--teal-600);box-shadow:0 0 0 2px #9FE1CB;}
-  .event-row.cat-economique .event-dot{background:var(--amber-600);box-shadow:0 0 0 2px #FAC775;}
-  .event-row.cat-militaire .event-dot{background:var(--coral-600);box-shadow:0 0 0 2px #F5C4B3;}
-  .event-row.cat-culturel .event-dot{background:var(--blue-600);box-shadow:0 0 0 2px #B5D4F4;}
-  .event-row.cat-autochtone .event-dot{background:var(--green-600);box-shadow:0 0 0 2px #C0DD97;}
-
-  .event-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.9rem 1rem;}
-  .event-card:hover{border-color:var(--border-strong);}
-  .event-top{display:flex;align-items:flex-start;gap:8px;}
-  .event-date-badge{font-size:11px;font-family:'Arial',sans-serif;font-weight:700;padding:3px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
-  .cat-politique .event-date-badge{background:var(--purple-50);color:var(--purple-800);}
-  .cat-social .event-date-badge{background:var(--teal-50);color:var(--teal-800);}
-  .cat-economique .event-date-badge{background:var(--amber-50);color:var(--amber-800);}
-  .cat-militaire .event-date-badge{background:var(--coral-50);color:var(--coral-800);}
-  .cat-culturel .event-date-badge{background:var(--blue-50);color:var(--blue-800);}
-  .cat-autochtone .event-date-badge{background:var(--green-50);color:var(--green-800);}
-  .cat-autre .event-date-badge{background:var(--gray-50);color:var(--gray-800);}
-
-  .event-title{font-size:15px;font-weight:700;font-family:'Arial',sans-serif;flex:1;line-height:1.3;color:var(--text-primary);}
-  .event-actions{display:flex;gap:4px;flex-shrink:0;}
-  .icon-btn{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:4px;color:var(--text-hint);font-size:15px;transition:all 0.15s;line-height:1;}
-  .icon-btn:hover{background:var(--gray-50);color:var(--text-primary);}
-  .icon-btn.del:hover{background:var(--red-50);color:var(--red-600);}
-  .event-desc{font-size:13px;color:var(--text-secondary);margin-top:6px;line-height:1.65;font-family:'Arial',sans-serif;}
-  .cat-label{font-size:11px;font-family:'Arial',sans-serif;color:var(--text-hint);margin-top:4px;}
-
-  .empty-state{text-align:center;padding:3rem 1rem;color:var(--text-hint);font-family:'Arial',sans-serif;font-size:14px;}
-  .empty-state .icon{font-size:32px;margin-bottom:8px;}
-
-  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem;}
-  .legend-item{display:flex;align-items:center;gap:5px;font-size:12px;font-family:'Arial',sans-serif;color:var(--text-secondary);}
-  .legend-dot{width:10px;height:10px;border-radius:50%;}
-
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#3C3489;color:#fff;font-family:'Arial',sans-serif;font-size:13px;padding:10px 20px;border-radius:8px;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:999;white-space:nowrap;}
-  .toast.show{opacity:1;}
-
-  @media print{
-    header{background:#3C3489 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    .units-bar,.add-panel,.toolbar,.event-actions,.btn-hdr,.legend{display:none !important;}
-    .event-card{break-inside:avoid;}
-    body{background:#fff;}
-    main{padding:1rem;max-width:100%;}
-    .timeline-axis{background:#ccc !important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-  }
+:root {
+  --purple-800:#3C3489;
+  --purple-600:#534AB7;
+  --bg:#FAFAF8;
+  --surface:#FFFFFF;
+  --border:rgba(0,0,0,0.1);
+  --text-primary:#1A1A18;
+  --text-secondary:#5F5E5A;
+  --text-hint:#888780;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text-primary); }
+header { background: var(--purple-800); color: #fff; padding: 1.5rem 2rem; }
+header h1 { font-size: 22px; margin-bottom: 4px; }
+header p { font-size: 13px; opacity: 0.75; }
+.header-row { display: flex; justify-content: space-between; align-items: center; }
+.btn-hdr { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; margin-left: 6px; }
+.btn-hdr:hover { background: rgba(255,255,255,0.25); }
+main { max-width: 860px; margin: 0 auto; padding: 2rem; }
+.auth-modal { display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
+.auth-modal.hidden { display: none; }
+.auth-box { background: var(--surface); padding: 2rem; border-radius: 10px; width: 100%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+.auth-box h2 { font-size: 18px; margin-bottom: 1.5rem; }
+.auth-field { margin-bottom: 1rem; }
+.auth-field label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; color: var(--text-hint); margin-bottom: 6px; }
+.auth-field input { width: 100%; padding: 10px; font-size: 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); }
+.auth-field input:focus { border-color: var(--purple-600); outline: none; box-shadow: 0 0 0 2px rgba(83, 74, 183, 0.1); }
+.auth-error { background: #FCEBEB; color: #A32D2D; padding: 10px; border-radius: 6px; font-size: 12px; margin-bottom: 1rem; display: none; }
+.auth-error.show { display: block; }
+.auth-btn { width: 100%; padding: 10px; font-size: 13px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-bottom: 8px; }
+.auth-btn.primary { background: var(--purple-800); color: #fff; }
+.auth-btn.primary:hover { background: var(--purple-600); }
+.auth-link { text-align: center; font-size: 12px; color: var(--text-hint); margin-top: 8px; }
+.auth-link button { background: none; border: none; color: var(--purple-600); cursor: pointer; text-decoration: underline; font-size: 12px; }
+.add-panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; }
+.add-panel h2 { font-size: 15px; margin-bottom: 1rem; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+label { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-hint); margin-bottom: 4px; }
+input[type=text], textarea, select { width: 100%; padding: 8px; font-size: 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); }
+input[type=text]:focus, textarea:focus, select:focus { border-color: var(--purple-600); outline: none; }
+textarea { min-height: 64px; }
+.form-actions { display: flex; gap: 8px; margin-top: 10px; justify-content: flex-end; }
+.btn { padding: 8px 16px; font-size: 13px; border-radius: 6px; cursor: pointer; border: none; }
+.btn-primary { background: var(--purple-800); color: #fff; }
+.btn-primary:hover { background: var(--purple-600); }
+.btn-secondary { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+.btn-secondary:hover { background: var(--bg); }
+.toolbar { display: flex; gap: 8px; margin-bottom: 1.5rem; align-items: center; }
+.timeline { position: relative; padding-left: 40px; }
+.event-row { margin-bottom: 1.5rem; position: relative; }
+.event-dot { position: absolute; left: -30px; top: 10px; width: 12px; height: 12px; border-radius: 50%; background: #534AB7; }
+.event-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.event-card:hover { border-color: var(--text-secondary); }
+.event-top { display: flex; justify-content: space-between; align-items: start; }
+.event-title { font-size: 15px; font-weight: 700; }
+.event-date { font-size: 11px; background: #EEEDFE; color: var(--purple-800); padding: 3px 8px; border-radius: 4px; }
+.event-desc { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
+.icon-btn { background: none; border: none; cursor: pointer; font-size: 14px; padding: 4px; }
+.icon-btn:hover { background: var(--bg); border-radius: 4px; }
+.empty-state { text-align: center; padding: 3rem; color: var(--text-hint); }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--purple-800); color: #fff; padding: 10px 20px; border-radius: 8px; z-index: 999; opacity: 0; transition: opacity 0.3s; }
+.toast.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -236,16 +79,14 @@
     
     <div id="login-form">
       <div class="auth-field">
-        <label>Adresse Email</label>
+        <label>Email</label>
         <input type="email" id="login-email" placeholder="vous@example.com">
       </div>
       <div class="auth-field">
         <label>Mot de passe</label>
         <input type="password" id="login-password" placeholder="••••••••">
       </div>
-      <div class="auth-buttons">
-        <button class="auth-btn primary" onclick="handleLogin()">Se connecter</button>
-      </div>
+      <button class="auth-btn primary" onclick="handleLogin()">Se connecter</button>
       <div class="auth-link">
         Pas encore inscrit ? <button onclick="switchToSignup()">Créer un compte</button>
       </div>
@@ -256,7 +97,7 @@
 
     <div id="signup-form" style="display: none;">
       <div class="auth-field">
-        <label>Adresse Email</label>
+        <label>Email</label>
         <input type="email" id="signup-email" placeholder="vous@example.com">
       </div>
       <div class="auth-field">
@@ -264,12 +105,10 @@
         <input type="password" id="signup-password" placeholder="••••••••">
       </div>
       <div class="auth-field">
-        <label>Confirmer le mot de passe</label>
+        <label>Confirmer</label>
         <input type="password" id="signup-confirm" placeholder="••••••••">
       </div>
-      <div class="auth-buttons">
-        <button class="auth-btn primary" onclick="handleSignup()">Créer un compte</button>
-      </div>
+      <button class="auth-btn primary" onclick="handleSignup()">Créer un compte</button>
       <div class="auth-link">
         Déjà inscrit ? <button onclick="switchToLogin()">Se connecter</button>
       </div>
@@ -277,17 +116,12 @@
 
     <div id="forgot-form" style="display: none;">
       <div class="auth-field">
-        <label>Adresse Email</label>
+        <label>Email</label>
         <input type="email" id="forgot-email" placeholder="vous@example.com">
       </div>
-      <p style="font-size: 12px; color: var(--text-hint); margin-bottom: 1rem; font-family: 'Arial', sans-serif;">
-        Nous vous enverrons un lien pour réinitialiser votre mot de passe.
-      </p>
-      <div class="auth-buttons">
-        <button class="auth-btn primary" onclick="handleForgot()">Envoyer le lien</button>
-      </div>
+      <button class="auth-btn primary" onclick="handleForgot()">Envoyer le lien</button>
       <div class="auth-link">
-        <button onclick="switchToLogin()">Retour à la connexion</button>
+        <button onclick="switchToLogin()">Retour</button>
       </div>
     </div>
   </div>
@@ -297,30 +131,16 @@
   <div class="header-row">
     <div>
       <h1>📜 Frise chronologique — Histoire</h1>
-      <p>Sec 3 &amp; Sec 4 &nbsp;·&nbsp; Préparation à l'examen du ministère</p>
+      <p>Sec 3 & Sec 4 · Préparation à l'examen du ministère</p>
     </div>
-    <div class="header-actions">
-      <button class="btn-hdr" id="user-btn" onclick="showUserMenu()" style="background: rgba(255,255,255,0.25);">
-        👤 <span id="user-email">Connexion</span>
-      </button>
-      <button class="btn-hdr" onclick="exportJSON()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10z"/><polyline points="14 2 14 10 22 10"/><path d="M12 19v-6m-3 3l3-3 3 3"/></svg>
-        Exporter
-      </button>
-      <button class="btn-hdr" onclick="document.getElementById('import-file').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Importer
-      </button>
+    <div>
+      <button class="btn-hdr" id="user-btn" onclick="showUserMenu()">👤 Connexion</button>
+      <button class="btn-hdr" onclick="exportJSON()">Exporter</button>
+      <button class="btn-hdr" onclick="document.getElementById('import-file').click()">Importer</button>
       <input type="file" id="import-file" accept=".json" onchange="importJSON(event)" style="display:none;">
-      <button class="btn-hdr" onclick="openPrintPage()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/></svg>
-        Imprimer
-      </button>
     </div>
   </div>
 </header>
-
-<div class="units-bar" id="units-bar"></div>
 
 <main>
   <div class="add-panel" id="add-panel" style="display:none;">
@@ -328,16 +148,16 @@
     <div class="form-grid">
       <div>
         <label>Date</label>
-        <input type="text" id="inp-date" placeholder="1867, 1900-1920, etc.">
+        <input type="text" id="inp-date" placeholder="1867">
       </div>
       <div>
         <label>Titre</label>
-        <input type="text" id="inp-title" placeholder="Confédération canadienne">
+        <input type="text" id="inp-title" placeholder="Titre">
       </div>
     </div>
-    <div class="form-full">
+    <div>
       <label>Description</label>
-      <textarea id="inp-desc" placeholder="Détails optionnels..."></textarea>
+      <textarea id="inp-desc" placeholder="Détails..."></textarea>
     </div>
     <div class="form-grid">
       <div>
@@ -346,15 +166,7 @@
           <option value="autre">Autre</option>
           <option value="politique">Politique</option>
           <option value="social">Social</option>
-          <option value="economique">Économique</option>
-          <option value="militaire">Militaire</option>
-          <option value="culturel">Culturel</option>
-          <option value="autochtone">Autochtone</option>
         </select>
-      </div>
-      <div>
-        <label>Unité / Thème</label>
-        <select id="inp-unit" style="display:none;"></select>
       </div>
     </div>
     <div class="form-actions">
@@ -363,79 +175,43 @@
     </div>
   </div>
 
-  <div class="toolbar" id="toolbar" style="display:none;">
-    <span>Trier par :</span>
-    <button class="sort-btn active" onclick="sortBy('chrono')">Chronologique</button>
-    <button class="sort-btn" onclick="sortBy('title')">Titre</button>
-    <button class="sort-btn" onclick="sortBy('cat')">Catégorie</button>
-    <span class="count-badge" id="count-badge"></span>
-  </div>
-
-  <div class="legend" id="legend" style="display:none;">
-    <div class="legend-item"><span class="legend-dot" style="background:#534AB7;"></span> Politique</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#0F6E56;"></span> Social</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#854F0B;"></span> Économique</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#993C1D;"></span> Militaire</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#185FA5;"></span> Culturel</div>
-    <div class="legend-item"><span class="legend-dot" style="background:#3B6D11;"></span> Autochtone</div>
-  </div>
-
   <div class="timeline" id="timeline">
-    <div class="timeline-axis"></div>
-    <div class="empty-state">
-      <div class="icon">📭</div>
-      <p>Aucun événement. Connectez-vous pour commencer.</p>
-    </div>
+    <div class="empty-state">📭 Connectez-vous pour commencer</div>
   </div>
 </main>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────────────────
-// SUPABASE CONFIG - UPDATE THESE VALUES!
-// ─────────────────────────────────────────────────────────
-const SUPABASE_URL = 'https://rltxdbjioopgzqqlzfxk.supabase.co';  // Replace with your project URL
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsdHhkYmppb29wZ3pxcWx6ZnhrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMyOTExMzMsImV4cCI6MjA5ODg2NzEzM30.hHfZAmYS31WyMiJdcn9K7zfzPAqL1J8uDnuzn4WqbvE';  
-// Initialize Supabase ONCE
-let supabase = null;
+// ============================================
+// CONFIGURATION - UPDATE THESE TWO LINES ONLY
+// ============================================
+const SUPABASE_URL = 'https://rltxdbjiooqgzgqlzfxk.supabase.co';
+const SUPABASE_ANON_KEY = 'PASTE_YOUR_ANON_KEY_HERE';
+
+// Initialize Supabase
+const { createClient } = window.supabase;
+let sb = null;
+let currentUser = null;
+let events = [];
+
 try {
-  const { createClient } = window.supabase;
-  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('✓ Supabase initialized');
 } catch(e) {
-  console.error('Supabase init error:', e);
+  console.error('✗ Supabase error:', e);
+  showToast('⚠️ Configuration error');
 }
 
-// ─────────────────────────────────────────────────────────
-// GLOBAL VARIABLES
-// ─────────────────────────────────────────────────────────
-let events = [];
-let currentUser = null;
-let currentSort = 'chrono';
-let currentUnit = 'all';
-let loadingEvents = false;
-
-const UNITS = [
-  { id: 'u1', label: 'Les débuts du régime français (1534-1663)' },
-  { id: 'u2', label: 'Le Régime français (1663-1763)' },
-  { id: 'u3', label: 'Le début du Régime britannique (1763-1791)' },
-  { id: 'u4', label: 'La constitution de 1791 et ses suites (1791-1840)' },
-  { id: 'u5', label: 'Les rebellions (1837-1838)' },
-  { id: 'u6', label: 'L\'Acte d\'Union et ses conséquences (1840-1867)' },
-  { id: 'u7', label: 'La Confédération à nos jours' },
-  { id: 'u8', label: 'Divers' }
-];
-
-// ─────────────────────────────────────────────────────────
-// AUTH FUNCTIONS - DEFINED FIRST
-// ─────────────────────────────────────────────────────────
+// ============================================
+// AUTH FUNCTIONS
+// ============================================
 
 function switchToLogin() {
   document.getElementById('login-form').style.display = 'block';
   document.getElementById('signup-form').style.display = 'none';
   document.getElementById('forgot-form').style.display = 'none';
   document.getElementById('auth-title').textContent = 'Connexion';
-  clearAuthForms();
 }
 
 function switchToSignup() {
@@ -443,25 +219,79 @@ function switchToSignup() {
   document.getElementById('signup-form').style.display = 'block';
   document.getElementById('forgot-form').style.display = 'none';
   document.getElementById('auth-title').textContent = 'Créer un compte';
-  clearAuthForms();
 }
 
 function switchToForgot() {
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('signup-form').style.display = 'none';
   document.getElementById('forgot-form').style.display = 'block';
-  document.getElementById('auth-title').textContent = 'Réinitialiser le mot de passe';
-  clearAuthForms();
+  document.getElementById('auth-title').textContent = 'Réinitialiser';
 }
 
-function clearAuthForms() {
-  document.getElementById('auth-error').classList.remove('show');
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-password').value = '';
-  document.getElementById('signup-email').value = '';
-  document.getElementById('signup-password').value = '';
-  document.getElementById('signup-confirm').value = '';
-  document.getElementById('forgot-email').value = '';
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+async function handleLogin() {
+  if (!sb) { showAuthError('Not configured'); return; }
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  if (!email || !password) { showAuthError('Remplissez tous les champs'); return; }
+  
+  try {
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) showAuthError(error.message);
+    else {
+      currentUser = data.user;
+      closeAuthModal();
+      updateHeader();
+      loadEvents();
+    }
+  } catch(e) {
+    showAuthError(e.message);
+  }
+}
+
+async function handleSignup() {
+  if (!sb) { showAuthError('Not configured'); return; }
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const confirm = document.getElementById('signup-confirm').value;
+  
+  if (!email || !password || !confirm) { showAuthError('Remplissez tous les champs'); return; }
+  if (password !== confirm) { showAuthError('Les mots de passe ne correspondent pas'); return; }
+  if (password.length < 6) { showAuthError('Minimum 6 caractères'); return; }
+  
+  try {
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if (error) showAuthError(error.message);
+    else {
+      showToast('✅ Compte créé !');
+      setTimeout(() => switchToLogin(), 1500);
+    }
+  } catch(e) {
+    showAuthError(e.message);
+  }
+}
+
+async function handleForgot() {
+  if (!sb) { showAuthError('Not configured'); return; }
+  const email = document.getElementById('forgot-email').value.trim();
+  if (!email) { showAuthError('Entrez votre email'); return; }
+  
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email);
+    if (error) showAuthError(error.message);
+    else {
+      showToast('✅ Lien envoyé !');
+      setTimeout(() => switchToLogin(), 1500);
+    }
+  } catch(e) {
+    showAuthError(e.message);
+  }
 }
 
 function closeAuthModal() {
@@ -473,172 +303,53 @@ function openAuthModal() {
   switchToLogin();
 }
 
-function showAuthError(msg) {
-  const errorEl = document.getElementById('auth-error');
-  errorEl.textContent = msg;
-  errorEl.classList.add('show');
-  setTimeout(() => errorEl.classList.remove('show'), 3000);
-}
-
-async function handleLogin() {
-  if (!supabase) {
-    showAuthError('Supabase not initialized');
-    return;
-  }
-
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  
-  if (!email || !password) {
-    showAuthError('Veuillez remplir tous les champs');
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      showAuthError(error.message);
-    } else {
-      currentUser = data.user;
-      closeAuthModal();
-      updateHeader();
-      await loadEvents();
-    }
-  } catch(e) {
-    showAuthError('Erreur: ' + e.message);
-  }
-}
-
-async function handleSignup() {
-  if (!supabase) {
-    showAuthError('Supabase not initialized');
-    return;
-  }
-
-  const email = document.getElementById('signup-email').value.trim();
-  const password = document.getElementById('signup-password').value;
-  const confirm = document.getElementById('signup-confirm').value;
-  
-  if (!email || !password || !confirm) {
-    showAuthError('Veuillez remplir tous les champs');
-    return;
-  }
-  if (password !== confirm) {
-    showAuthError('Les mots de passe ne correspondent pas');
-    return;
-  }
-  if (password.length < 6) {
-    showAuthError('Le mot de passe doit contenir au moins 6 caractères');
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      showAuthError(error.message);
-    } else {
-      showToast('✅ Compte créé ! Vérifiez votre email.');
-      setTimeout(() => switchToLogin(), 2000);
-    }
-  } catch(e) {
-    showAuthError('Erreur: ' + e.message);
-  }
-}
-
-async function handleForgot() {
-  if (!supabase) {
-    showAuthError('Supabase not initialized');
-    return;
-  }
-
-  const email = document.getElementById('forgot-email').value.trim();
-  
-  if (!email) {
-    showAuthError('Veuillez entrer votre email');
-    return;
-  }
-
-  try {
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '?password-reset=true'
-    });
-    
-    if (error) {
-      showAuthError(error.message);
-    } else {
-      showToast('✅ Lien de réinitialisation envoyé !');
-      setTimeout(() => switchToLogin(), 2000);
-    }
-  } catch(e) {
-    showAuthError('Erreur: ' + e.message);
-  }
-}
-
 function updateHeader() {
-  const userBtn = document.getElementById('user-btn');
-  const userEmail = document.getElementById('user-email');
+  const btn = document.getElementById('user-btn');
   if (currentUser) {
-    userEmail.textContent = currentUser.email.split('@')[0];
-    userBtn.innerHTML = `👤 ${currentUser.email.split('@')[0]} ▼`;
+    btn.textContent = `👤 ${currentUser.email.split('@')[0]}`;
     document.getElementById('add-panel').style.display = 'block';
-    document.getElementById('toolbar').style.display = 'flex';
-    document.getElementById('legend').style.display = 'flex';
   } else {
-    userEmail.textContent = 'Connexion';
-    userBtn.innerHTML = '👤 Connexion';
+    btn.textContent = '👤 Connexion';
     document.getElementById('add-panel').style.display = 'none';
-    document.getElementById('toolbar').style.display = 'none';
-    document.getElementById('legend').style.display = 'none';
   }
 }
 
 function showUserMenu() {
   if (currentUser) {
     if (confirm(`Déconnexion de ${currentUser.email} ?`)) {
-      handleLogout();
+      sb.auth.signOut();
+      currentUser = null;
+      events = [];
+      updateHeader();
+      render();
+      openAuthModal();
+      showToast('✅ Déconnecté');
     }
   } else {
     openAuthModal();
   }
 }
 
-async function handleLogout() {
-  if (!supabase) return;
-  await supabase.auth.signOut();
-  currentUser = null;
-  events = [];
-  updateHeader();
-  render();
-  openAuthModal();
-  showToast('✅ Déconnecté');
-}
-
-// ─────────────────────────────────────────────────────────
+// ============================================
 // TIMELINE FUNCTIONS
-// ─────────────────────────────────────────────────────────
+// ============================================
 
 async function loadEvents() {
-  if (!currentUser || !supabase || loadingEvents) return;
-  loadingEvents = true;
-  
+  if (!currentUser || !sb) return;
   try {
-    const { data, error } = await supabase
+    const { data, error } = await sb
       .from('events')
       .select('*')
       .eq('user_id', currentUser.id)
       .order('sort_key', { ascending: true });
-
     if (error) {
       console.error('Load error:', error);
-      showToast('⚠️ Erreur lors du chargement');
     } else {
       events = (data || []).map(e => ({
         id: e.id,
         date: e.date,
         title: e.title,
         desc: e.description,
-        cat: e.category,
-        unit: e.unit,
         sortKey: e.sort_key
       }));
       render();
@@ -646,78 +357,51 @@ async function loadEvents() {
   } catch(e) {
     console.error('Load exception:', e);
   }
-  loadingEvents = false;
 }
 
 async function addEvent() {
-  if (!currentUser || !supabase) {
-    openAuthModal();
-    return;
-  }
-
+  if (!currentUser || !sb) { openAuthModal(); return; }
   const date = document.getElementById('inp-date').value.trim();
   const title = document.getElementById('inp-title').value.trim();
   const desc = document.getElementById('inp-desc').value.trim();
   const cat = document.getElementById('inp-cat').value;
-  const unit = document.getElementById('inp-unit').value || 'u1';
-
-  if (!date || !title) {
-    alert('Veuillez remplir la date et le titre');
-    return;
-  }
-
-  const sortKey = parseSortKey(date);
+  
+  if (!date || !title) { alert('Date et titre requis'); return; }
+  
+  const sortKey = parseInt(date.match(/\d+/)?.[0] || 0) * 10000;
   
   try {
-    const { error } = await supabase
-      .from('events')
-      .insert([{
-        user_id: currentUser.id,
-        date,
-        title,
-        description: desc,
-        category: cat,
-        unit,
-        sort_key: sortKey
-      }]);
-
-    if (error) {
-      console.error('Add error:', error);
-      alert('Erreur lors de l\'ajout: ' + error.message);
-    } else {
+    const { error } = await sb.from('events').insert([{
+      user_id: currentUser.id,
+      date,
+      title,
+      description: desc,
+      category: cat,
+      unit: 'u1',
+      sort_key: sortKey
+    }]);
+    if (error) alert('Erreur: ' + error.message);
+    else {
       document.getElementById('inp-date').value = '';
       document.getElementById('inp-title').value = '';
       document.getElementById('inp-desc').value = '';
-      document.getElementById('inp-cat').value = 'autre';
-      await loadEvents();
-      showToast('✅ Événement ajouté !');
+      loadEvents();
+      showToast('✅ Événement ajouté');
     }
   } catch(e) {
-    console.error('Add exception:', e);
     alert('Erreur: ' + e.message);
   }
 }
 
 async function deleteEvent(id) {
-  if (!currentUser || !supabase) return;
-  if (!confirm('Supprimer cet événement ?')) return;
-
+  if (!currentUser || !sb) return;
+  if (!confirm('Supprimer ?')) return;
   try {
-    const { error } = await supabase
-      .from('events')
-      .delete()
-      .eq('id', id)
-      .eq('user_id', currentUser.id);
-
-    if (error) {
-      console.error('Delete error:', error);
-      alert('Erreur lors de la suppression');
-    } else {
-      await loadEvents();
-      showToast('✅ Événement supprimé');
-    }
+    await sb.from('events').delete().eq('id', id).eq('user_id', currentUser.id);
+    loadEvents();
+    showToast('✅ Supprimé');
   } catch(e) {
-    console.error('Delete exception:', e);
+    alert('Erreur: ' + e.message);
   }
 }
 
@@ -725,126 +409,71 @@ function cancelAdd() {
   document.getElementById('inp-date').value = '';
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-desc').value = '';
-  document.getElementById('inp-cat').value = 'autre';
-}
-
-function parseSortKey(dateStr) {
-  if (!dateStr) return 0;
-  const match = dateStr.match(/^-?\d+/);
-  return match ? parseInt(match[0]) * 10000 : 0;
-}
-
-function sortBy(mode) {
-  currentSort = mode;
-  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  render();
 }
 
 function render() {
   const timeline = document.getElementById('timeline');
-  
   if (!currentUser) {
-    timeline.innerHTML = '<div class="empty-state"><div class="icon">🔒</div><p>Veuillez vous connecter pour voir vos événements.</p></div>';
+    timeline.innerHTML = '<div class="empty-state">🔒 Connectez-vous pour voir vos événements</div>';
     return;
   }
-
-  let sorted = [...events];
-  
-  if (currentUnit !== 'all') {
-    sorted = sorted.filter(e => e.unit === currentUnit);
-  }
-
-  if (currentSort === 'chrono') {
-    sorted.sort((a, b) => a.sortKey - b.sortKey);
-  } else if (currentSort === 'title') {
-    sorted.sort((a, b) => a.title.localeCompare(b.title, 'fr'));
-  } else if (currentSort === 'cat') {
-    sorted.sort((a, b) => a.cat.localeCompare(b.cat));
-  }
-
-  if (sorted.length === 0) {
-    timeline.innerHTML = '<div class="empty-state"><div class="icon">📭</div><p>Aucun événement dans cette section.</p></div>';
+  if (events.length === 0) {
+    timeline.innerHTML = '<div class="empty-state">📭 Aucun événement</div>';
     return;
   }
-
-  document.getElementById('count-badge').textContent = sorted.length + ' événement' + (sorted.length > 1 ? 's' : '');
-
-  const catFr = {politique:'Politique',social:'Social',economique:'Économique',militaire:'Militaire',culturel:'Culturel',autochtone:'Autochtone',autre:'Autre'};
-  
-  timeline.innerHTML = '<div class="timeline-axis"></div>' + sorted.map(e => `
-    <div class="event-row cat-${e.cat}">
+  timeline.innerHTML = events.map(e => `
+    <div class="event-row">
       <div class="event-dot"></div>
       <div class="event-card">
         <div class="event-top">
-          <span class="event-date-badge">${escHtml(e.date)}</span>
-          <div class="event-title">${escHtml(e.title)}</div>
-          <div class="event-actions">
-            <button class="icon-btn del" onclick="deleteEvent(${e.id})">🗑️</button>
+          <div>
+            <div class="event-date">${e.date}</div>
+            <div class="event-title">${e.title}</div>
+            ${e.desc ? `<div class="event-desc">${e.desc}</div>` : ''}
           </div>
+          <button class="icon-btn" onclick="deleteEvent(${e.id})">🗑️</button>
         </div>
-        ${e.desc ? `<div class="event-desc">${escHtml(e.desc)}</div>` : ''}
-        <div class="cat-label">${catFr[e.cat]||e.cat}</div>
       </div>
     </div>
   `).join('');
 }
 
-function escHtml(s) {
-  const div = document.createElement('div');
-  div.textContent = s;
-  return div.innerHTML;
-}
-
 function exportJSON() {
-  if (!currentUser) {
-    alert('Veuillez vous connecter');
-    return;
-  }
+  if (!currentUser) { alert('Connectez-vous'); return; }
   const blob = new Blob([JSON.stringify({ events })], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'frise_' + new Date().toISOString().slice(0, 10) + '.json';
+  a.download = 'frise_' + new Date().toISOString().slice(0,10) + '.json';
   a.click();
-  URL.revokeObjectURL(a.href);
-  showToast('✅ Frise exportée !');
+  showToast('✅ Exporté');
 }
 
 function importJSON(evt) {
-  if (!currentUser || !supabase) {
-    alert('Veuillez vous connecter');
-    evt.target.value = '';
-    return;
-  }
-
+  if (!currentUser || !sb) { alert('Connectez-vous'); evt.target.value = ''; return; }
   const file = evt.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = async function(e) {
     try {
       const data = JSON.parse(e.target.result);
       const imported = data.events || data;
-      if (!Array.isArray(imported)) throw new Error('Format invalide');
-      
-      if (!confirm('Importer ' + imported.length + ' événement(s) ?\n(Ceux-ci s\'ajouteront à vos événements actuels)')) return;
-
+      if (!Array.isArray(imported)) throw new Error('Invalid format');
+      if (!confirm(`Importer ${imported.length} événement(s) ?`)) return;
       for (const ev of imported) {
-        const sortKey = parseSortKey(ev.date || '');
-        await supabase.from('events').insert([{
+        const sortKey = parseInt(String(ev.date).match(/\d+/)?.[0] || 0) * 10000;
+        await sb.from('events').insert([{
           user_id: currentUser.id,
           date: ev.date || '',
           title: ev.title || '',
           description: ev.desc || '',
           category: ev.cat || 'autre',
-          unit: ev.unit || 'u1',
+          unit: 'u1',
           sort_key: sortKey
         }]);
       }
-
-      await loadEvents();
-      showToast('✅ ' + imported.length + ' événements importés !');
-    } catch (err) {
+      loadEvents();
+      showToast('✅ Importé');
+    } catch(err) {
       alert('Erreur: ' + err.message);
     }
     evt.target.value = '';
@@ -852,108 +481,33 @@ function importJSON(evt) {
   reader.readAsText(file);
 }
 
-function openPrintPage() {
-  if (!currentUser) {
-    alert('Veuillez vous connecter');
-    return;
-  }
-
-  const sorted = [...events].sort((a,b)=>a.sortKey-b.sortKey);
-  const catColors = {politique:'#534AB7', social:'#0F6E56', economique:'#854F0B', militaire:'#993C1D', culturel:'#185FA5', autochtone:'#3B6D11', autre:'#888780'};
-  const catBg = {politique:'#EEEDFE', social:'#E1F5EE', economique:'#FAEEDA', militaire:'#FAECE7', culturel:'#E6F1FB', autochtone:'#EAF3DE', autre:'#F1EFE8'};
-  const catFr = {politique:'Politique',social:'Social',economique:'Économique',militaire:'Militaire',culturel:'Culturel',autochtone:'Autochtone',autre:'Autre'};
-
-  const rows = sorted.map(e => {
-    const c = e.cat||'autre';
-    const col = catColors[c]||'#888';
-    const bg = catBg[c]||'#eee';
-    const unitName = (UNITS.find(u=>u.id===e.unit)||{}).label||'';
-    return `<tr>
-      <td style="padding:10px 12px;vertical-align:top;white-space:nowrap;border-bottom:1px solid #e8e8e4;">
-        <span style="display:inline-block;background:${bg};color:${col};font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;">${escHtml(e.date)}</span>
-      </td>
-      <td style="padding:10px 12px;vertical-align:top;border-bottom:1px solid #e8e8e4;">
-        <div style="font-weight:700;font-size:14px;margin-bottom:4px;">${escHtml(e.title)}</div>
-        ${e.desc?`<div style="font-size:12px;color:#5F5E5A;line-height:1.6;">${escHtml(e.desc)}</div>`:''}
-        <div style="font-size:10px;color:#aaa;margin-top:4px;">${catFr[c]||c}${unitName?' · '+unitName.split('(')[0].trim():''}</div>
-      </td>
-      <td style="padding:10px 12px;vertical-align:top;border-bottom:1px solid #e8e8e4;">
-        <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${col};margin-top:3px;"></span>
-      </td>
-    </tr>`;
-  }).join('');
-
-  const html = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">
-  <title>Frise chronologique — Histoire</title>
-  <style>
-    body{font-family:Arial,sans-serif;margin:0;padding:24px 32px;background:#fff;color:#1A1A18;}
-    h1{font-size:20px;font-weight:700;margin-bottom:4px;}
-    p.sub{font-size:12px;color:#888;margin-bottom:20px;}
-    table{width:100%;border-collapse:collapse;}
-    th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#aaa;padding:6px 12px;border-bottom:2px solid #e8e8e4;}
-    @media print{body{padding:0;} .no-print{display:none;}}
-  </style>
-  </head><body>
-  <h1>📜 Frise chronologique — Histoire du Québec et du Canada</h1>
-  <p class="sub">Sec 3 &amp; Sec 4 · Préparation à l'examen du ministère · ${sorted.length} événements</p>
-  <button class="no-print" onclick="window.print()" style="margin-bottom:16px;padding:8px 18px;background:#3C3489;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;">🖨️ Imprimer / Enregistrer en PDF</button>
-  <table>
-    <thead><tr><th style="width:130px;">Date</th><th>Événement</th><th style="width:24px;"></th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>
-  </body></html>`;
-
-  const w = window.open('','_blank');
-  if (w) { w.document.write(html); w.document.close(); }
-  else { showToast('⚠️ Autorisez les popups pour imprimer'); }
-}
-
 function showToast(msg) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2000);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-function buildUnitTabs() {
-  const bar = document.getElementById('units-bar');
-  bar.innerHTML = '<button class="unit-tab active" onclick="filterUnit(\'all\')">Tous</button>' +
-    UNITS.map(u => `<button class="unit-tab" onclick="filterUnit('${u.id}')">${u.label}</button>`).join('');
-}
-
-function filterUnit(uid) {
-  currentUnit = uid;
-  document.querySelectorAll('.unit-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
-  render();
-}
-
-// ─────────────────────────────────────────────────────────
+// ============================================
 // INITIALIZATION
-// ─────────────────────────────────────────────────────────
+// ============================================
 
 async function init() {
-  if (!supabase) {
-    showToast('⚠️ Supabase not configured. Check browser console.');
-    openAuthModal();
-    return;
-  }
-
+  if (!sb) { showToast('⚠️ Not configured'); return; }
   try {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await sb.auth.getSession();
     if (session) {
       currentUser = session.user;
       updateHeader();
-      await loadEvents();
+      loadEvents();
     } else {
       openAuthModal();
     }
-
-    supabase.auth.onAuthStateChange(async (event, session) => {
+    sb.auth.onAuthStateChange((event, session) => {
       if (session) {
         currentUser = session.user;
         updateHeader();
-        await loadEvents();
+        loadEvents();
       } else {
         currentUser = null;
         updateHeader();
@@ -961,11 +515,9 @@ async function init() {
     });
   } catch(e) {
     console.error('Init error:', e);
-    showToast('⚠️ Initialization error');
   }
 }
 
-buildUnitTabs();
 init();
 </script>
 </body>
